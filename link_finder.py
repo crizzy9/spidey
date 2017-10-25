@@ -26,7 +26,7 @@ class LinkFinder:
         self.links = []
         self.count = count
 
-    def scrape_links(self, html, keyword, only_store_documents):
+    def scrape_links(self, html, keyword):
         page_soup = soup(html, "html.parser")
         header = page_soup.h1
         body_content = page_soup.find("div", {"id": "bodyContent"})
@@ -37,33 +37,31 @@ class LinkFinder:
 
         store_document(self.count, header.text, self.page_url, page_soup)
 
-        if not only_store_documents:
-            ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
+        ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
 
-            for link in urls:
-                if link.has_attr("href"):
-                    # try to do keyword check outside loop
-                    # focused crawling
-                    if keyword.strip() != "":
-                        m = ignore_regex.match(link.get("href"))
-                        if m is not None:
-                            string = str(m.group())
-                            index = string.lower().find(keyword)
-                            if string[index - 1].isalpha():
-                                continue
-
-                    # normal crawling
-                    else:
-                        m = without_keyword_regex.match(link.get("href"))
-                        if m is not None and any(ext in m.group() for ext in ignore_list):
+        for link in urls:
+            if link.has_attr("href"):
+                # try to do keyword check outside loop
+                # focused crawling
+                if keyword.strip() != "":
+                    m = ignore_regex.match(link.get("href"))
+                    if m is not None:
+                        string = str(m.group())
+                        index = string.lower().find(keyword)
+                        if string[index - 1].isalpha():
                             continue
 
-                    if m is not None:
-                        new_link = self.domain_name + m.group()
+                # normal crawling
+                else:
+                    m = without_keyword_regex.match(link.get("href"))
+                    if m is not None and any(ext in m.group() for ext in ignore_list):
+                        continue
 
-                        if new_link not in self.links:
-                            self.links.append(new_link)
+                if m is not None:
+                    new_link = self.domain_name + m.group()
 
+                    if new_link not in self.links:
+                        self.links.append(new_link)
 
     def page_links(self):
         return self.links
