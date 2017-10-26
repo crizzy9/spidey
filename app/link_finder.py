@@ -1,6 +1,8 @@
-from bs4 import BeautifulSoup as soup
-from general import store_document
 import re
+
+from bs4 import BeautifulSoup as soup
+
+from app.general import store_document
 
 ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z_\-/()]*)('
 ignore_regex_2 = ')([0-9a-z_\-/()]*))(?!:|.jpg|.png)'

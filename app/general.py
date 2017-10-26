@@ -1,4 +1,5 @@
 import os
+import pickle
 from urllib.parse import urlparse
 
 DOCUMENTS_DIR = 'documents'
@@ -12,11 +13,14 @@ def create_dir(directory):
 
 def create_data_files(dir_name, base_url):
     queue = os.path.join(dir_name, 'queue.txt')
-    crawled = os.path.join(dir_name, "crawled.txt")
+    bfs_crawled = os.path.join(dir_name, "bfs_crawled.txt")
+    dfs_crawled = os.path.join(dir_name, "dfs_crawled.txt ")
     if not os.path.isfile(queue):
         write_file(queue, base_url)
-    if not os.path.isfile(crawled):
-        write_file(crawled, '')
+    if not os.path.isfile(bfs_crawled):
+        write_file(bfs_crawled, '')
+    if not os.path.isfile(dfs_crawled):
+        write_file(dfs_crawled, '')
 
 
 def write_file(path, data):
@@ -56,6 +60,27 @@ def arr_to_file(links, file):
     for link in links:
         add_to_file(file, link)
     return file
+
+
+def file_to_dict(file_name):
+    if os.path.isfile(file_name):
+        print("Loading graph file:", file_name)
+        if os.path.getsize(file_name) > 0:
+            with open(file_name, "rb") as handle:
+                dic = pickle.load(handle)
+            return dic
+    else:
+        print("Creating graph file:", file_name)
+        f = open(file_name, "wb+")
+        f.close()
+        return {}
+
+
+def dict_to_file(graph, file_name):
+    # could be stored by converting dict to string
+    # but pickle provides better compression
+    with open(file_name, "wb") as handle:
+        pickle.dump(graph, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def get_domain_name(url):
