@@ -37,12 +37,13 @@ class PageRank:
                 for q in self.inlink_graph[p]:
                     self.ranks[p] += self.d*self.ranks[q]/len(self.outlink_graph[q])
 
-        print("PAGE RANK")
-        print(self.ranks)
-        sorted_ranks = list(reversed(self.ranks))
-        top_fifty = sorted_ranks[:50]
-        print("TOP 50 PAGES:")
-        print(top_fifty)
+        print("PAGE RANK RESULTS")
+        rank_tuples = sorted(self.ranks.items(), key=operator.itemgetter(1))
+        sorted_ranks = list(reversed(rank_tuples))
+        print(sorted_ranks)
+        # top_fifty = sorted_ranks[:50]
+        # print("TOP 50 PAGES:")
+        # print(top_fifty)
 
     def converged(self):
         shannon_entropy = 0

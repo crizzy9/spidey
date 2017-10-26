@@ -14,13 +14,13 @@ def create_dir(directory):
 def create_data_files(dir_name, base_url):
     queue = os.path.join(dir_name, 'queue.txt')
     bfs_crawled = os.path.join(dir_name, "bfs_crawled.txt")
-    dfs_crawled = os.path.join(dir_name, "dfs_crawled.txt ")
+    # dfs_crawled = os.path.join(dir_name, "dfs_crawled.txt ")
     if not os.path.isfile(queue):
         write_file(queue, base_url)
     if not os.path.isfile(bfs_crawled):
         write_file(bfs_crawled, '')
-    if not os.path.isfile(dfs_crawled):
-        write_file(dfs_crawled, '')
+    # if not os.path.isfile(dfs_crawled):
+    #     write_file(dfs_crawled, '')
 
 
 def write_file(path, data):

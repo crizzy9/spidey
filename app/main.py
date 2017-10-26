@@ -22,14 +22,14 @@ start_time = time.time()
 scheduler = Scheduler(seed, keyword)
 
 # bfs crawl
-scheduler.init_spider("bfs")
+# scheduler.init_spider("bfs")
 # creating a spider which will crawl recursively
-scheduler.create_spider()
+# scheduler.create_spider()
 # goes into recursive loop and gets out when queue is empty
-scheduler.crawl()
+# scheduler.crawl()
 
 # dfs crawl
-# scheduler.init_spider("dfs")
+scheduler.init_spider("dfs")
 
 
 #calculate Page Rank

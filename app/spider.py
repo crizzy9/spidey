@@ -23,7 +23,7 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 1000
+    limit = 50
     inlink_graph = {}
     outlink_graph = {}
 
@@ -42,7 +42,6 @@ class Spider:
         Spider.outlinks_file = os.path.join(Spider.dir_name, 'outlinks.pickle')
         Spider.keyword = keyword
         Spider.style = style
-        self.dep = 0
 
         self.boot()
 
@@ -95,25 +94,37 @@ class Spider:
 
     def crawl_page_dfs(self, page_url):
 
+        stack = [page_url]
 
+        while stack:
+            # use a stack file
+            url = stack.pop()
 
-        if page_url not in Spider.crawled:
-            if self.dep < Spider.max_depth or len(Spider.crawled) >= Spider.limit:
-                self.dep += 1
-                print("CRAWLING depth", self.dep)
-            else:
-                return
-            print("Crawling:", page_url)
-            matched_links = Spider.gather_links(page_url)
+            if url in Spider.crawled:
+                continue
+
+            if len(Spider.crawled) >= Spider.limit:
+                break
+
+            print("Crawling:", url)
+            matched_links = Spider.gather_links(url)
             print("Found:", len(matched_links), " links")
             # adding to crawled links
-            Spider.crawled.append(page_url)
+            Spider.crawled.append(url)
             # update crawled file
             arr_to_file(Spider.crawled, Spider.dfs_crawled_file)
 
-            for link in matched_links:
-                print("Crawled:", str(len(Spider.crawled)), "Depth:", self.dep)
-                self.crawl_page_dfs(link)
+            if Spider.depth < Spider.max_depth:
+                Spider.depth += 1
+                print("INCREASING DEPTH", Spider.depth)
+                for link in reversed(matched_links):
+                    stack.append(link)
+            else:
+                Spider.depth -= 1
+                print("DECREASING DEPTH", Spider.depth)
+                # dont go to next depth
+
+        print(len(stack))
 
 
 
