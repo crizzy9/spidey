@@ -29,6 +29,9 @@ class PageRank:
         self.get_sinks()
 
     def calculate_page_rank(self):
+        if self.inlink_graph == {} or self.outlink_graph == {}:
+            print("Graph is empty!!!")
+            return
         for page in self.all_pages:
             self.ranks[page] = 1/self.corp_len
         while not self.converged():
@@ -62,16 +65,29 @@ class PageRank:
 
         perplexity = 2 ** shannon_entropy
         self.perplexities.append(perplexity)
-        diff = perplexity - self.prev_perp
-        if diff < 1 or diff > -1:
-            self.converge_counter += 1
-        else:
-            self.converge_counter = 0
 
-        if self.converge_counter >= 4:
-            return True
-        else:
-            return False
+        if len(self.perplexities) > 3:
+            pp = 0
+            for p in self.perplexities[len(self.perplexities) - self.converge_limit:]:
+                if p-pp < 1 or pp-p < 1:
+                    self.converge_counter += 1
+            if self.converge_counter >= self.converge_limit:
+                return True
+            else:
+                return False
+
+        return False
+        # diff = perplexity - self.prev_perp
+        # if diff < 1 or diff > -1:
+        #     print("Diff is:", diff)
+        #     self.converge_counter += 1
+        # else:
+        #     self.converge_counter = 0
+        #
+        # if self.converge_counter >= self.converge_limit:
+        #     return True
+        # else:
+        #     return False
 
     def get_sinks(self):
         # from outlink_graph check if any page with 0 outlinks

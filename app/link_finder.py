@@ -30,12 +30,16 @@ class LinkFinder:
 
     def scrape_links(self, html, keyword):
         page_soup = soup(html, "html.parser")
-        title = page_soup.title
+        url_split = self.page_url.split('/')
+        page_name = url_split[len(url_split) - 1]
         body_content = page_soup.find("div", {"id": "bodyContent"})
         urls = body_content.find_all("a")
         # urls = page_soup.find_all("a")
 
-        store_document(self.count, title, self.page_url, page_soup)
+        try:
+            store_document(self.count, page_name, self.page_url, page_soup)
+        except:
+            print("lalalal")
 
         ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
 

@@ -24,7 +24,7 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 1000
+    limit = 50
     inlink_graph = {}
     outlink_graph = {}
     prev_request_time = 0
@@ -89,7 +89,7 @@ class Spider:
             Spider.queue.remove(page_url)
             Spider.crawled.append(page_url)
             Spider.update_files()
-            print('Crawled: ' + str(len(Spider.crawled)))
+            print('Queue: ' + str(len(Spider.queue)) + ' | Crawled: ' + str(len(Spider.crawled)))
 
         Spider.counter += 1
 
@@ -162,16 +162,15 @@ class Spider:
     @staticmethod
     def gather_links(page_url):
         html = ''
+        # delaying requests so they are atleast 1 sec apart
+        request_time = time.time()
+        diff = request_time - Spider.prev_request_time
+        if diff < 1:
+            print("Waiting for sometime...", diff)
+            # time.sleep(1)
+            time.sleep(1 - diff)
+        Spider.prev_request_time = request_time
         try:
-            # delaying requests so they are atleast 1 sec apart
-            request_time = time.time()
-            diff = request_time - Spider.prev_request_time
-            if diff < 1:
-                print("Waiting for sometime...", diff)
-                # time.sleep(1)
-                time.sleep(1-diff)
-            Spider.prev_request_time = request_time
-
             response = urlopen(page_url)
             if response.getheader('Content-Type') == 'text/html; charset=UTF-8':
                 html = response.read()

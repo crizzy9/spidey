@@ -32,9 +32,10 @@ scheduler.crawl()
 
 # calculate Page Rank
 pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
+
 pageRank.calculate_page_rank()
 
-print("DFS CRAWL: ")
+# print("DFS CRAWL: ")
 
 # dfs crawl
 # scheduler.init_spider("dfs")

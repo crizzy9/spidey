@@ -91,9 +91,9 @@ def get_domain_name(url):
 
 
 # change to store multiple documents in 1 document
-def store_document(name, title, page_url, body_content):
+def store_document(name, page_name, page_url, body_content):
     path = os.path.join(DOCUMENTS_DIR, str(name))
-    new_content = "URL: " + page_url + "\n\n" + "TITLE: " + title + "\n\n" + str(body_content)
+    new_content = "URL: " + page_url + "\n\n" + "Page Name: " + page_name + "\n\n" + str(body_content)
     try:
         create_dir(DOCUMENTS_DIR)
         if not os.path.isfile(path):
