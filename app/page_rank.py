@@ -8,8 +8,7 @@ class PageRank:
     # dampening factor
     d = 0.85
     ranks = {}
-    prev_perp = 0
-    converge_limit = 100
+    converge_limit = 4
     converge_counter = 0
     perplexities = []
 
@@ -77,17 +76,6 @@ class PageRank:
                 return False
 
         return False
-        # diff = perplexity - self.prev_perp
-        # if diff < 1 or diff > -1:
-        #     print("Diff is:", diff)
-        #     self.converge_counter += 1
-        # else:
-        #     self.converge_counter = 0
-        #
-        # if self.converge_counter >= self.converge_limit:
-        #     return True
-        # else:
-        #     return False
 
     def get_sinks(self):
         # from outlink_graph check if any page with 0 outlinks

@@ -36,10 +36,7 @@ class LinkFinder:
         urls = body_content.find_all("a")
         # urls = page_soup.find_all("a")
 
-        try:
-            store_document(self.count, page_name, self.page_url, page_soup)
-        except:
-            print("lalalal")
+        store_document(self.count, page_name, self.page_url, page_soup)
 
         ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
 
