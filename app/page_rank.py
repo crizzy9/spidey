@@ -1,5 +1,6 @@
 import math
 import operator
+from app.general import *
 
 
 class PageRank:
@@ -8,17 +9,20 @@ class PageRank:
     d = 0.85
     ranks = {}
     prev_perp = 0
-    converge_limit = 4
+    converge_limit = 100
     converge_counter = 0
+    perplexities = []
 
     # p - crawled (all pages)
     # S- sink nodes
     # M(p) - inlinks of page P
     # L(q) - outlinks from page q
-    def __init__(self, inlink_graph, outlink_graph):
+    def __init__(self, dir_name, inlink_graph, outlink_graph):
         self.inlink_graph = inlink_graph
         self.outlink_graph = outlink_graph
         self.all_pages = self.outlink_graph.keys()
+        self.page_rank_file = os.path.join(dir_name, 'pagerank.txt')
+        self.perplexity_file = os.path.join(dir_name, 'perplexity.txt')
 
         self.corp_len = len(self.all_pages)
         self.sinks = []
@@ -40,7 +44,12 @@ class PageRank:
         print("PAGE RANK RESULTS")
         rank_tuples = sorted(self.ranks.items(), key=operator.itemgetter(1))
         sorted_ranks = list(reversed(rank_tuples))
+        arr_to_file(sorted_ranks, self.page_rank_file)
         print(sorted_ranks)
+
+        # storing perplexities
+        arr_to_file(self.perplexities, self.perplexity_file)
+
         # top_fifty = sorted_ranks[:50]
         # print("TOP 50 PAGES:")
         # print(top_fifty)
@@ -52,6 +61,7 @@ class PageRank:
             shannon_entropy -= rank*math.log(rank, 2)
 
         perplexity = 2 ** shannon_entropy
+        self.perplexities.append(perplexity)
         diff = perplexity - self.prev_perp
         if diff < 1 or diff > -1:
             self.converge_counter += 1

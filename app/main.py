@@ -21,23 +21,26 @@ start_time = time.time()
 
 scheduler = Scheduler(seed, keyword)
 
+print("BFS CRAWL: ")
+
 # bfs crawl
-# scheduler.init_spider("bfs")
+scheduler.init_spider("bfs")
 # creating a spider which will crawl recursively
-# scheduler.create_spider()
+scheduler.create_spider()
 # goes into recursive loop and gets out when queue is empty
-# scheduler.crawl()
+scheduler.crawl()
 
-# dfs crawl
-scheduler.init_spider("dfs")
-
-
-#calculate Page Rank
-pageRank = PageRank(Spider.inlink_graph, Spider.outlink_graph)
+# calculate Page Rank
+pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
 pageRank.calculate_page_rank()
 
+print("DFS CRAWL: ")
 
-
+# dfs crawl
+# scheduler.init_spider("dfs")
+#
+# pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
+# pageRank.calculate_page_rank()
 
 # execution complete
 print("*****************************\nExecution time:")

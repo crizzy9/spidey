@@ -1,3 +1,4 @@
+import time
 from urllib.request import urlopen
 
 from app.general import *
@@ -23,9 +24,10 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 50
+    limit = 1000
     inlink_graph = {}
     outlink_graph = {}
+    prev_request_time = 0
 
     # remove redundant variables
     queue = []
@@ -87,18 +89,17 @@ class Spider:
             Spider.queue.remove(page_url)
             Spider.crawled.append(page_url)
             Spider.update_files()
-
-            print('Queue: ' + str(len(Spider.queue)) + ' | Crawled: ' + str(len(Spider.crawled)))
+            print('Crawled: ' + str(len(Spider.crawled)))
 
         Spider.counter += 1
 
     def crawl_page_dfs(self, page_url):
 
-        stack = [page_url]
+        # stack = [page_url]
 
-        while stack:
-            # use a stack file
-            url = stack.pop()
+        while Spider.queue:
+            # queue acts as a stack
+            url = Spider.queue.pop()
 
             if url in Spider.crawled:
                 continue
@@ -109,24 +110,43 @@ class Spider:
             print("Crawling:", url)
             matched_links = Spider.gather_links(url)
             print("Found:", len(matched_links), " links")
-            # adding to crawled links
-            Spider.crawled.append(url)
-            # update crawled file
-            arr_to_file(Spider.crawled, Spider.dfs_crawled_file)
+
+            # doing graph stuff
+            if url not in Spider.outlink_graph.keys():
+                Spider.outlink_graph[url] = matched_links
 
             if Spider.depth < Spider.max_depth:
                 Spider.depth += 1
                 print("INCREASING DEPTH", Spider.depth)
                 for link in reversed(matched_links):
-                    stack.append(link)
+                    Spider.queue.append(link)
             else:
                 Spider.depth -= 1
                 print("DECREASING DEPTH", Spider.depth)
                 # dont go to next depth
 
-        print(len(stack))
+            # adding to crawled links
+            Spider.crawled.append(url)
 
+        Spider.queue = []
 
+        # change outlink graph to only include the links that have been crawled
+        for key in Spider.outlink_graph.keys():
+            for link in Spider.outlink_graph[key]:
+                if link not in Spider.crawled:
+                    Spider.outlink_graph[key].remove(link)
+                    # also convert all links to doc nos in it
+
+        # create inlink graph
+        for key in Spider.outlink_graph.keys():
+            for link in Spider.outlink_graph[key]:
+                if link not in Spider.inlink_graph.keys():
+                    Spider.inlink_graph[link] = [key]
+                elif key not in Spider.inlink_graph[link]:
+                    Spider.inlink_graph[link].append(key)
+
+        # print(len(Spider.queue))
+        Spider.update_files()
 
     @staticmethod
     def manage_depth():
@@ -143,6 +163,15 @@ class Spider:
     def gather_links(page_url):
         html = ''
         try:
+            # delaying requests so they are atleast 1 sec apart
+            request_time = time.time()
+            diff = request_time - Spider.prev_request_time
+            if diff < 1:
+                print("Waiting for sometime...", diff)
+                # time.sleep(1)
+                time.sleep(1-diff)
+            Spider.prev_request_time = request_time
+
             response = urlopen(page_url)
             if response.getheader('Content-Type') == 'text/html; charset=UTF-8':
                 html = response.read()
@@ -183,7 +212,11 @@ class Spider:
         # check execution time after removing this
         # if possible update these after execution finished to reduce execution time
         arr_to_file(Spider.queue, Spider.queue_file)
-        # updating bfs crawl file
-        arr_to_file(Spider.crawled, Spider.bfs_crawled_file)
+        if Spider.style == 'bfs':
+            # updating bfs crawl file
+            arr_to_file(Spider.crawled, Spider.bfs_crawled_file)
+        else:
+            # updating dfs crawl file
+            arr_to_file(Spider.crawled, Spider.dfs_crawled_file)
         dict_to_file(Spider.inlink_graph, Spider.inlinks_file)
         dict_to_file(Spider.outlink_graph, Spider.outlinks_file)
