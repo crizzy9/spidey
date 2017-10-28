@@ -2,10 +2,10 @@ import re
 
 from bs4 import BeautifulSoup as soup
 
-from app.general import store_document
+from app.general import *
 
 ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z_\-/()]*)('
-ignore_regex_2 = ')([0-9a-z_\-/()]*))(?!:|.jpg|.png)'
+ignore_regex_2 = ')([0-9a-z_\-/()]*)(?!:|.jpg|.png)'
 
 # add all special characters
 
@@ -24,28 +24,33 @@ class LinkFinder:
         super().__init__()
         self.base_url = base_url
         self.page_url = page_url
+        self.page_title = get_url_title(self.page_url)
         self.domain_name = domain_name
         self.links = []
         self.count = count
+        self.titles = []
+        self.ignore_regex = None
 
     def scrape_links(self, html, keyword):
         page_soup = soup(html, "html.parser")
-        url_split = self.page_url.split('/')
-        page_name = url_split[len(url_split) - 1]
+
         body_content = page_soup.find("div", {"id": "bodyContent"})
         urls = body_content.find_all("a")
-        # urls = page_soup.find_all("a")
 
-        store_document(self.count, page_name, self.page_url, page_soup)
+        store_document(self.count, self.page_title, self.page_url, page_soup)
 
-        ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
+        try:
+            self.ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
+        except:
+            # error in ignore regex
+            pass
 
         for link in urls:
             if link.has_attr("href"):
                 # try to do keyword check outside loop
                 # focused crawling
                 if keyword.strip() != "":
-                    m = ignore_regex.match(link.get("href"))
+                    m = self.ignore_regex.match(link.get("href"))
                     if m is not None:
                         string = str(m.group())
                         index = string.lower().find(keyword)
@@ -63,9 +68,16 @@ class LinkFinder:
 
                     if new_link not in self.links:
                         self.links.append(new_link)
+                        self.titles.append(get_url_title(new_link))
 
     def page_links(self):
         return self.links
+
+    def page_titles(self):
+        return self.titles
+
+    def get_current_page_title(self):
+        return self.page_title
 
     def error(self, message):
         pass

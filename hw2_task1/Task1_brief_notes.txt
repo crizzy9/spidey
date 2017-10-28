@@ -1,0 +1,28 @@
+Proportion of pages with no-inlinks(sources) and pages with no out-links(sinks)
+
+G1
+
+ZERO INLINK PAGES(source): 0
+ZERO OUTLINK PAGES(sinks): 66
+['Geometric_terms_of_location', 'Tropical_Depression_(EP)', 'Tropical_Storm_(album)', 'One_If_by_Clam,_Two_If_by_Sea', 'The_Checks', 'Allen_Press', 'Dictionary.com', 'Wayback_Machine', 'Hurricane_(nickname)', 'Hurricane,_Alabama', 'Hurricane,_Kentucky', 'Hurricane,_Bollinger_County,_Missouri', 'Hurricane,_Washington_County,_Missouri', 'Hurricane_Creek_(disambiguation)', 'Hurricane_Lake', 'Hurricane_Mountain_(disambiguation)', 'Hurricane_Plantation', 'Hurricane_Ridge', 'Hurricane_(comics)', 'Black_Scorpion_(TV_series)', 'Jerry_Jameson', 'Hurricane_(band)', 'DJ_Hurricane', 'Hurricane_Chris_(rapper)', 'Hurricane_Festival', 'Hurricane_(Eric_Ben%C3%A9t_album)', 'Agatha_Christie_(band)', 'Hurricane_(Athlete_song)', 'Hurricane_(Bridgit_Mendler_song)', 'Hurricane_(Lauren_Bennett_song)', 'Hurricane_(Luke_Combs_song)', 'Hurricane_(Puffy_AmiYumi_song)', 'Hurricanes_(Pull_Tiger_Tail_song)', 'Hurricane_(Thrice_song)', 'Hurricane_(Rebound!_song)', 'Hurricane_(Westend_song)', 'Time_Bomb_(Alyssa_Reid_album)', 'Bajan_Style', 'Goodbye_Blues', 'Ilse_DeLange', 'Infernal_(Danish_band)', 'Caf%C3%A9_Racers', '...And_the_Circus_Leaves_Town', 'Out_of_the_Wasteland', 'White_Lilies_Island', 'The_Outsiders_(Needtobreathe_album)', 'Samestate', 'The_Truth_Is..._(Theory_of_a_Deadman_album)', 'Audioboxer', 'Hurricane_(ride)', 'Hurricane_(pinball)', 'Operation_Hurricane_(disambiguation)', 'Toronto_RCAF_Hurricanes', 'Budapest_Hurricanes', 'Dundee_Hurricanes', 'H%C3%B8rsholm_Hurricanes', 'Paisley_Hurricanes', 'Hartford_Hurricanes', 'Holyoke_Hurricanes', 'Honolulu_Hurricanes', 'Houston_Hurricanes', 'Hurricanes_(rugby_union)', 'Hurricanes_Rugby_League', 'Honda_CBR600F', 'ACA_Hurricane', 'Hurriganes']
+
+G2
+
+ZERO INLINK PAGES(source): 0
+ZERO OUTLINK PAGES(sinks): 24
+['Marek_Kuchci%C5%84ski', 'Syllable_(disambiguation)', 'Baptismal_font', 'Bronze_Age_(disambiguation)', 'Joseph_Aved', 'Region_(disambiguation)', 'Driving_(disambiguation)', 'Molecules_(journal)', 'SI_(disambiguation)', 'CGS_(disambiguation)', 'President_(corporate_title)', 'USMC_(disambiguation)', 'SPQR_(disambiguation)', 'Byzantine_(disambiguation)', 'Triarchy_(disambiguation)', 'USSR_(disambiguation)', 'Department_(disambiguation)', 'The_Deed', 'Flow_Chart', 'Iubal', 'James_R._Lewis_(scholar)', 'OUP_(disambiguation)', 'Psalm_(disambiguation)', 'Retail_(comic_strip)']
+
+
+
+1) The sinks identified here are not actually sinks since we are only using a corpus of 1000 urls
+and none of those 1000 are in these pages they are considered as sink nodes when they actually arent
+Example:
+a page like Wayback_Machine which has high number of inlinks(Rank 5 by inlink count) has zero
+outlinks since none of the real outlinks of that page does not exist in the corpus
+
+2) Zero inlink count doesnt make sense because if a page had zero inlink count it would be impossible to reach using a crawler
+since there is no page that points to that page
+
+3) The same problem of fake sinks exist in G2 also but the number is way less because in G2 most of the links exist at
+a higher depth and the lower depth links are very few and hence a lot of lower links which were in the stack gets
+removed but not the higher depth ones which results in less number of sinks compared to G1

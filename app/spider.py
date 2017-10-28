@@ -24,10 +24,13 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 50
+    limit = 1000
     inlink_graph = {}
     outlink_graph = {}
     prev_request_time = 0
+
+    curr_page_title = ''
+    page_titles = []
 
     # remove redundant variables
     queue = []
@@ -84,7 +87,12 @@ class Spider:
             Spider.add_links_to_queue(matched_links)
 
             # create graph now
-            Spider.add_to_graph(page_url, matched_links)
+            # Spider.add_to_graph()
+
+            # doing graph stuff
+            url_title = get_url_title(page_url)
+            if url_title not in Spider.outlink_graph.keys():
+                Spider.outlink_graph[url_title] = get_titles_for_urls(matched_links)
 
             Spider.queue.remove(page_url)
             Spider.crawled.append(page_url)
@@ -112,8 +120,9 @@ class Spider:
             print("Found:", len(matched_links), " links")
 
             # doing graph stuff
-            if url not in Spider.outlink_graph.keys():
-                Spider.outlink_graph[url] = matched_links
+            url_title = get_url_title(url)
+            if url_title not in Spider.outlink_graph.keys():
+                Spider.outlink_graph[url_title] = get_titles_for_urls(matched_links)
 
             if Spider.depth < Spider.max_depth:
                 Spider.depth += 1
@@ -127,23 +136,14 @@ class Spider:
 
             # adding to crawled links
             Spider.crawled.append(url)
+            print('Crawled: ' + str(len(Spider.crawled)))
 
         Spider.queue = []
 
-        # change outlink graph to only include the links that have been crawled
-        for key in Spider.outlink_graph.keys():
-            for link in Spider.outlink_graph[key]:
-                if link not in Spider.crawled:
-                    Spider.outlink_graph[key].remove(link)
-                    # also convert all links to doc nos in it
+        Spider.update_graph()
 
-        # create inlink graph
-        for key in Spider.outlink_graph.keys():
-            for link in Spider.outlink_graph[key]:
-                if link not in Spider.inlink_graph.keys():
-                    Spider.inlink_graph[link] = [key]
-                elif key not in Spider.inlink_graph[link]:
-                    Spider.inlink_graph[link].append(key)
+        # storing string graph in file
+        dict_to_str_file(Spider.inlink_graph, 'hw2_task1/G2.txt')
 
         # print(len(Spider.queue))
         Spider.update_files()
@@ -162,12 +162,11 @@ class Spider:
     @staticmethod
     def gather_links(page_url):
         html = ''
-        # delaying requests so they are atleast 1 sec apart
+        # delaying requests so they are at-least 1 sec apart
         request_time = time.time()
         diff = request_time - Spider.prev_request_time
         if diff < 1:
-            print("Waiting for sometime...", diff)
-            # time.sleep(1)
+            print("Waiting for sometime before next request...", diff)
             time.sleep(1 - diff)
         Spider.prev_request_time = request_time
         try:
@@ -176,6 +175,8 @@ class Spider:
                 html = response.read()
             finder = LinkFinder(Spider.base_url, page_url, Spider.domain_name, len(Spider.crawled))
             finder.scrape_links(html, Spider.keyword)
+            Spider.curr_page_title = finder.get_current_page_title()
+            Spider.page_titles = finder.page_titles()
         except:
             print('Error: could not crawl page', page_url)
             return []
@@ -199,12 +200,36 @@ class Spider:
                 break
 
     @staticmethod
-    def add_to_graph(current_url, matched_links):
-        grapher = Grapher(current_url, matched_links, Spider.queue, Spider.crawled, Spider.inlink_graph, Spider.outlink_graph)
+    def add_to_graph():
+        grapher = Grapher(Spider.curr_page_title, Spider.page_titles, Spider.inlink_graph, Spider.outlink_graph)
         # could just save outlink graph right now and generate inlink graph later
         # check for efficiency later
         grapher.update_outlink_graph()
         grapher.update_inlink_graph()
+
+    @staticmethod
+    def update_graph():
+        # putting only titles in crawled titles for making graph
+        crawled_titles = get_titles_for_urls(Spider.crawled)
+
+        # change outlink graph to only include the links that have been crawled
+        for key in Spider.outlink_graph.keys():
+            if key not in crawled_titles:
+                del Spider.outlink_graph[key]
+                continue
+            new_titles = []
+            for title in Spider.outlink_graph[key]:
+                if title in crawled_titles and title != key:
+                    new_titles.append(title)
+            Spider.outlink_graph[key] = new_titles
+
+        # create inlink graph
+        for key in Spider.outlink_graph.keys():
+            for title in Spider.outlink_graph[key]:
+                if title not in Spider.inlink_graph.keys():
+                    Spider.inlink_graph[title] = [key]
+                elif key not in Spider.inlink_graph[title]:
+                    Spider.inlink_graph[title].append(key)
 
     @staticmethod
     def update_files():

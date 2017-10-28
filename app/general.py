@@ -83,11 +83,32 @@ def dict_to_file(graph, file_name):
         pickle.dump(graph, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+def dict_to_str_file(graph, file_name):
+    with open(file_name, "w+") as file:
+        for key in graph.keys():
+            line = key + ' '
+            for elem in graph[key]:
+                line += elem + ' '
+            file.write(line.strip() + '\n')
+
+
 def get_domain_name(url):
     try:
         return "https://" + urlparse(url).netloc
     except:
         return ''
+
+
+def get_url_title(url):
+    url_split = url.split('/')
+    return url_split[len(url_split) - 1]
+
+
+def get_titles_for_urls(urls):
+    titles = []
+    for url in urls:
+        titles.append(get_url_title(url))
+    return titles
 
 
 # change to store multiple documents in 1 document
@@ -100,4 +121,4 @@ def store_document(name, page_name, page_url, body_content):
             write_file(path, new_content)
             print("Document stored at:", path)
     except:
-        print("Error while storing document...\nNAME: " + title + " URL: " + page_url)
+        print("Error while storing document...\nNAME: " + page_name + " URL: " + page_url)
