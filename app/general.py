@@ -14,13 +14,10 @@ def create_dir(directory):
 def create_data_files(dir_name, base_url):
     queue = os.path.join(dir_name, 'queue.txt')
     bfs_crawled = os.path.join(dir_name, "bfs_crawled.txt")
-    # dfs_crawled = os.path.join(dir_name, "dfs_crawled.txt ")
     if not os.path.isfile(queue):
         write_file(queue, base_url)
     if not os.path.isfile(bfs_crawled):
         write_file(bfs_crawled, '')
-    # if not os.path.isfile(dfs_crawled):
-    #     write_file(dfs_crawled, '')
 
 
 def write_file(path, data):
@@ -111,7 +108,6 @@ def get_titles_for_urls(urls):
     return titles
 
 
-# change to store multiple documents in 1 document
 def store_document(name, page_name, page_url, body_content):
     path = os.path.join(DOCUMENTS_DIR, str(name))
     new_content = "URL: " + page_url + "\n\n" + "Page Name: " + page_name + "\n\n" + str(body_content)

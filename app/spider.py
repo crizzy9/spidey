@@ -4,8 +4,6 @@ from urllib.request import urlopen
 from app.general import *
 from app.link_finder import LinkFinder
 
-from app.grapher import Grapher
-
 
 class Spider:
 
@@ -24,7 +22,7 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 1000
+    limit = 10
     inlink_graph = {}
     outlink_graph = {}
     prev_request_time = 0
@@ -32,14 +30,13 @@ class Spider:
     curr_page_title = ''
     page_titles = []
 
-    # remove redundant variables
     queue = []
     crawled = []
 
     def __init__(self, dir_name, base_url, domain_name, keyword, style):
         Spider.dir_name = dir_name
-        Spider.base_url = base_url
-        Spider.domain_name = domain_name
+        Spider.base_url = base_url.strip()
+        Spider.domain_name = domain_name.strip()
         Spider.queue_file = os.path.join(Spider.dir_name, 'queue.txt')
         Spider.bfs_crawled_file = os.path.join(Spider.dir_name, 'bfs_crawled.txt')
         Spider.dfs_crawled_file = os.path.join(Spider.dir_name, 'dfs_crawled.txt')
@@ -58,7 +55,7 @@ class Spider:
         Spider.inlink_graph = file_to_dict(Spider.inlinks_file)
         Spider.outlink_graph = file_to_dict(Spider.outlinks_file)
 
-        #initializing vars which are different for bfs and dfs
+        # initializing vars which are different for bfs and dfs
         Spider.depth = 0
         Spider.prev_depth_len = 0
         Spider.counter = 0
@@ -68,7 +65,7 @@ class Spider:
             self.crawl_page_bfs(Spider.base_url)
         else:
             Spider.crawled = file_to_arr(Spider.bfs_crawled_file)
-            self.crawl_page_dfs(Spider.base_url)
+            self.crawl_pages_dfs()
 
 
     @staticmethod
@@ -86,9 +83,6 @@ class Spider:
 
             Spider.add_links_to_queue(matched_links)
 
-            # create graph now
-            # Spider.add_to_graph()
-
             # doing graph stuff
             url_title = get_url_title(page_url)
             if url_title not in Spider.outlink_graph.keys():
@@ -101,9 +95,8 @@ class Spider:
 
         Spider.counter += 1
 
-    def crawl_page_dfs(self, page_url):
-
-        # stack = [page_url]
+    @staticmethod
+    def crawl_pages_dfs():
 
         while Spider.queue:
             # queue acts as a stack
@@ -126,36 +119,27 @@ class Spider:
 
             if Spider.depth < Spider.max_depth:
                 Spider.depth += 1
-                print("INCREASING DEPTH", Spider.depth)
                 for link in reversed(matched_links):
                     Spider.queue.append(link)
             else:
                 Spider.depth -= 1
-                print("DECREASING DEPTH", Spider.depth)
-                # dont go to next depth
 
+            print("Reached depth: ", Spider.depth)
             # adding to crawled links
             Spider.crawled.append(url)
             print('Crawled: ' + str(len(Spider.crawled)))
 
         Spider.queue = []
-
         Spider.update_graph()
-
-        # storing string graph in file
-        dict_to_str_file(Spider.inlink_graph, 'hw2_task1/G2.txt')
-
-        # print(len(Spider.queue))
         Spider.update_files()
 
     @staticmethod
     def manage_depth():
-        # depth logic
+        # depth logic for bfs
         if Spider.counter == Spider.prev_depth_len:
             Spider.depth += 1
             Spider.counter = 0
             Spider.prev_depth_len = len(Spider.queue)
-            # get depth properly
             print("Now crawling Depth " + str(Spider.depth) + "\nGetting Depth " + str(Spider.depth + 1) + " links"
                   + "\nDepth " + str(Spider.depth - 1) + ": had " + str(Spider.prev_depth_len) + " links")
 
@@ -200,19 +184,12 @@ class Spider:
                 break
 
     @staticmethod
-    def add_to_graph():
-        grapher = Grapher(Spider.curr_page_title, Spider.page_titles, Spider.inlink_graph, Spider.outlink_graph)
-        # could just save outlink graph right now and generate inlink graph later
-        # check for efficiency later
-        grapher.update_outlink_graph()
-        grapher.update_inlink_graph()
-
-    @staticmethod
     def update_graph():
         # putting only titles in crawled titles for making graph
         crawled_titles = get_titles_for_urls(Spider.crawled)
 
         # change outlink graph to only include the links that have been crawled
+        # only keep the links that are in the crawled list
         for key in Spider.outlink_graph.keys():
             if key not in crawled_titles:
                 del Spider.outlink_graph[key]
@@ -230,11 +207,12 @@ class Spider:
                     Spider.inlink_graph[title] = [key]
                 elif key not in Spider.inlink_graph[title]:
                     Spider.inlink_graph[title].append(key)
+            if key not in Spider.inlink_graph.keys():
+                Spider.inlink_graph[key] = []
 
+    # updates the queue, crawled and graph files
     @staticmethod
     def update_files():
-        # check execution time after removing this
-        # if possible update these after execution finished to reduce execution time
         arr_to_file(Spider.queue, Spider.queue_file)
         if Spider.style == 'bfs':
             # updating bfs crawl file

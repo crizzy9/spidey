@@ -13,10 +13,6 @@ class PageRank:
     perplexities = []
     total_rounds = 0
 
-    # p - crawled (all pages)
-    # S- sink nodes
-    # M(p) - inlinks of page P
-    # L(q) - outlinks from page q
     def __init__(self, dir_name, inlink_graph, outlink_graph):
         self.inlink_graph = inlink_graph
         self.outlink_graph = outlink_graph
@@ -29,6 +25,9 @@ class PageRank:
         self.get_sinks()
 
     def calculate_page_rank(self):
+        print("GRAPHS:")
+        print(self.inlink_graph)
+        print(self.outlink_graph)
         if self.inlink_graph == {} or self.outlink_graph == {}:
             print("Graph is empty!!!")
             return
@@ -44,16 +43,16 @@ class PageRank:
                 for q in self.inlink_graph[p]:
                     self.ranks[p] += self.d*self.ranks[q]/len(self.outlink_graph[q])
 
-        print("PAGE RANK RESULTS")
+        print("PAGE RANK CALCULATED IN:", self.page_rank_file)
+        # sorting the page rank values
         rank_tuples = sorted(self.ranks.items(), key=operator.itemgetter(1))
         sorted_ranks = list(reversed(rank_tuples))
+
+        # storing page rank in file
         arr_to_file(sorted_ranks, self.page_rank_file)
-        print(sorted_ranks)
 
         # storing perplexities
         arr_to_file(self.perplexities, self.perplexity_file)
-
-        self.do_stuff_for_submissions(sorted_ranks)
 
     def converged(self):
         self.total_rounds += 1
@@ -82,26 +81,8 @@ class PageRank:
             return False
 
     def get_sinks(self):
-        # from outlink_graph check if any page with 0 outlinks
         for doc in self.outlink_graph.keys():
             if len(self.outlink_graph[doc]) == 0:
                 self.sinks.append(doc)
 
-    def do_stuff_for_submissions(self, ranks):
-        # create new array for g1 with round nos
-        count = 1
-        new_perps = []
-        for p in self.perplexities:
-            new_perps.append('Round ' + str(count) + ': ' + str(p))
-            count += 1
 
-        arr_to_file(new_perps, 'hw2_task2/G2_perplexities.txt')
-
-        top_fifty = ranks[:50]
-        new_ranks = []
-        rank_count = 1
-        for r in top_fifty:
-            new_ranks.append('Rank ' + str(rank_count) + '> Name: ' + r[0] + "| Value: " + str(r[1]))
-            rank_count += 1
-
-        arr_to_file(new_ranks, 'hw2_task2/G2_page_ranks.txt')

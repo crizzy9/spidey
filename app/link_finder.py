@@ -1,17 +1,10 @@
 import re
-
 from bs4 import BeautifulSoup as soup
-
 from app.general import *
+import sys, traceback
 
-ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z_\-/()]*)('
-ignore_regex_2 = ')([0-9a-z_\-/()]*)(?!:|.jpg|.png)'
-
-# add all special characters
-
-# allowed_characters = ['', '-', '_', '.', '+', '!', '*', ',', '$', ':', '/', '\'', '\"']
-
-# check for other special characters also like @ % & etc but check if they are not params or references like dont take # values
+ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z%,!_\-/()]*)('
+ignore_regex_2 = ')([0-9a-z%,!_\-/()]*))(?!:|.jpg|.png)'
 
 without_keyword_regex = re.compile('(/wiki/)(?!Main_Page)([0-9a-z%_–\-/()!\'\"*+;.:,$]*)', re.IGNORECASE)
 ignore_list = [".jpg", ":", ".png"]
@@ -40,14 +33,15 @@ class LinkFinder:
         store_document(self.count, self.page_title, self.page_url, page_soup)
 
         try:
-            self.ignore_regex = re.compile(ignore_regex_1 + keyword + ignore_regex_2, re.IGNORECASE)
+            self.ignore_regex = re.compile(ignore_regex_1 + keyword.strip() + ignore_regex_2, re.IGNORECASE)
         except:
             # error in ignore regex
+            traceback.print_exc(file=sys.stdout)
             pass
 
         for link in urls:
             if link.has_attr("href"):
-                # try to do keyword check outside loop
+
                 # focused crawling
                 if keyword.strip() != "":
                     m = self.ignore_regex.match(link.get("href"))
@@ -63,6 +57,7 @@ class LinkFinder:
                     if m is not None and any(ext in m.group() for ext in ignore_list):
                         continue
 
+                # getting all the links and titles
                 if m is not None:
                     new_link = self.domain_name + m.group()
 
