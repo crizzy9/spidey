@@ -8,12 +8,13 @@ from app.spider import Spider
 print("WEB CRAWLER STARTING...")
 
 print("Enter the seed url: ")
-seed = input()
-# seed = "https://en.wikipedia.org/wiki/Tropical_cyclone"
+# seed = input()
+seed = "https://en.wikipedia.org/wiki/Tropical_cyclone"
 
 print("Enter the keyword or just leave it empty:")
-keyword = input()
+# keyword = input()
 # keyword = "rain"
+keyword = ""
 
 
 # starting the timer

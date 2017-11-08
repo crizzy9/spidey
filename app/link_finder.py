@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup as soup
 from app.general import *
+from app.transformer import Transformer
 import sys, traceback
 
 ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z%,!_\-/()]*)('
@@ -30,7 +31,13 @@ class LinkFinder:
         body_content = page_soup.find("div", {"id": "bodyContent"})
         urls = body_content.find_all("a")
 
-        store_document(self.count, self.page_title, self.page_url, page_soup)
+        transformer = Transformer(self.count, self.page_title, self.page_url, page_soup)
+
+        # move all beautiful soup stuff to transformer
+        transformer.convert_to_plain_text()
+        transformer.store_document()
+
+        # store_document(self.count, self.page_title, self.page_url, page_soup)
 
         try:
             self.ignore_regex = re.compile(ignore_regex_1 + keyword.strip() + ignore_regex_2, re.IGNORECASE)
@@ -41,7 +48,7 @@ class LinkFinder:
 
         for link in urls:
             if link.has_attr("href"):
-
+                # change keyword to lower case
                 # focused crawling
                 if keyword.strip() != "":
                     m = self.ignore_regex.match(link.get("href"))
