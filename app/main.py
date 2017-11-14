@@ -34,22 +34,10 @@ scheduler.crawl()
 # updating the graphs for bfs
 Spider.update_graph()
 
-
 # calculating pagerank for bfs
 
 pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
 pageRank.calculate_page_rank()
-
-
-# dfs crawl
-
-# scheduler.init_spider("dfs")
-
-
-# calculating pagerank for dfs
-
-# pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
-# pageRank.calculate_page_rank()
 
 
 # parsing stuff
@@ -59,7 +47,9 @@ parser = Parser(Spider.crawled_titles)
 # parser.case_folding = False
 # parser.handle_punctuation = False
 
+print("Parsing documents...")
 parser.parse_documents()
+print("All documents successfully parsed")
 
 
 # indexing stuff

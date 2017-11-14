@@ -1,7 +1,6 @@
 import re
 from app.general import *
 from bs4 import BeautifulSoup as soup
-from app.parser import Parser
 import sys, traceback
 
 ignore_regex_1 = '(/wiki/)(?!Main_Page)(([0-9a-z%,!_\-/()]*)('

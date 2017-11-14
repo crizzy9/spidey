@@ -1,0 +1,65 @@
+STOP LIST
+Term	Frequency
+the		180591
+of		86834
+and		71703
+in		60340
+to		49531
+a		43928
+is		23773
+as		20122
+on		19212
+was		18336
+for		16652
+by		16416
+with		14975
+from		13622
+that		12935
+are		11252
+at		10978
+it		10614
+were		10495
+which		8463
+or		8452       -> 21st word
+-------------
+
+hurricane		8326
+an		8157
+tropical		6987
+be		6763
+its		6729
+storm		6605
+this		6123
+also		5938
+has		5356
+over		4956
+have		4947
+new		4905
+states		4568
+into		4401
+state		4393
+one		4245
+their		4139
+other		3978
+can		3958
+more		3935
+winds		3908
+not		3895
+after		3861
+most		3860
+during		3860
+first		3851
+had		3817
+united		3795
+than		3739
+
+
+According the tf values generated using the unigram data
+approximately the first 21 words should be treated as a stop list
+and since most of those terms dont really describe the documents that they appear in
+hence these terms will not be useful in capturing the relevance of a document with the term and will result
+in a bad indexer since words like 'the', 'of' .... 'or' match in almost all the documents
+
+Also the stop list would contain more terms if the corpus was larger
+here terms such as hurricane and tropical have high term frequecny since the seed url is related to that topic
+if the corpus was larger more stop words could be added
