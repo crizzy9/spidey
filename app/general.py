@@ -121,8 +121,9 @@ def store_document(page_name, page_url, body_content):
     path = os.path.join(DOCUMENTS_DIR, str(page_name))
     if os.path.isfile(path):
         print("FILE ALREADY EXISTS\nPATH:", path)
-    page_title = page_name.lower().translate(str.maketrans({'_': ' ', '(': '', ')': ''}))
-    new_content = page_title + "\n " + str(body_content)
+    # page_title = page_name.lower().translate(str.maketrans({'_': ' ', '(': '', ')': ''}))
+    # new_content = page_title + "\n " + str(body_content)
+    new_content = str(body_content)
     try:
         create_dir(DOCUMENTS_DIR)
         if not os.path.isfile(path):

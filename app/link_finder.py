@@ -1,5 +1,6 @@
 import re
 from app.general import *
+from bs4 import BeautifulSoup as soup
 from app.parser import Parser
 import sys, traceback
 
@@ -25,17 +26,11 @@ class LinkFinder:
 
     def scrape_links(self, html, keyword):
 
-        parser = Parser(self.count, self.page_title, self.page_url, html)
-
-        # options for text transformation
-        # parser.case_folding = False
-        # parser.handle_punctuation = False
-
-        body_content = parser.get_body_content()
+        page_soup = soup(html, "html.parser")
+        body_content = page_soup.find("div", {"id": "bodyContent"})
         urls = body_content.find_all("a")
 
-        parser.convert_to_plain_text()
-        parser.store_document()
+        store_document(self.page_title, self.page_url, body_content)
 
         try:
             self.ignore_regex = re.compile(ignore_regex_1 + keyword.strip() + ignore_regex_2, re.IGNORECASE)

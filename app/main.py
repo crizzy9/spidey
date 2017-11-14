@@ -4,7 +4,7 @@ from app.scheduler import Scheduler
 from app.page_rank import PageRank
 from app.spider import Spider
 from app.indexer import Indexer
-
+from app.parser import Parser
 
 print("WEB CRAWLER STARTING...")
 
@@ -50,6 +50,17 @@ pageRank.calculate_page_rank()
 
 # pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
 # pageRank.calculate_page_rank()
+
+
+# parsing stuff
+parser = Parser(Spider.crawled_titles)
+
+# options for text transformation
+# parser.case_folding = False
+# parser.handle_punctuation = False
+
+parser.parse_documents()
+
 
 # indexing stuff
 indexer = Indexer(Spider.crawled_titles)

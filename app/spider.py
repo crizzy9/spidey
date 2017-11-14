@@ -22,7 +22,7 @@ class Spider:
     max_depth = 6
     prev_depth_len = 0
     counter = 0
-    limit = 10
+    limit = 3
     inlink_graph = {}
     outlink_graph = {}
     prev_request_time = 0
