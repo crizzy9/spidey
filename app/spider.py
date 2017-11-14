@@ -32,6 +32,7 @@ class Spider:
 
     queue = []
     crawled = []
+    crawled_titles = []
 
     def __init__(self, dir_name, base_url, domain_name, keyword, style):
         Spider.dir_name = dir_name
@@ -151,7 +152,7 @@ class Spider:
         diff = request_time - Spider.prev_request_time
         if diff < 1:
             print("Waiting for sometime before next request...", diff)
-            time.sleep(1 - diff)
+            time.sleep(1) # - diff
         Spider.prev_request_time = request_time
         try:
             response = urlopen(page_url)
@@ -171,11 +172,11 @@ class Spider:
     @staticmethod
     def add_links_to_queue(links):
         for url in links:
-            if url in Spider.queue:
+            if url.lower() in [u.lower() for u in Spider.queue]:
                 continue
-            if url in Spider.crawled:
+            if url.lower() in [u.lower() for u in Spider.crawled]:
                 continue
-            if Spider.domain_name not in url:
+            if Spider.domain_name.lower() not in url.lower():
                 continue
             # logic for 1000 urls and 6 depth
             if len(Spider.queue) + len(Spider.crawled) < Spider.limit and Spider.depth <= Spider.max_depth:
@@ -186,17 +187,17 @@ class Spider:
     @staticmethod
     def update_graph():
         # putting only titles in crawled titles for making graph
-        crawled_titles = get_titles_for_urls(Spider.crawled)
+        Spider.crawled_titles = get_titles_for_urls(Spider.crawled)
 
         # change outlink graph to only include the links that have been crawled
         # only keep the links that are in the crawled list
         for key in Spider.outlink_graph.keys():
-            if key not in crawled_titles:
+            if key not in Spider.crawled_titles:
                 del Spider.outlink_graph[key]
                 continue
             new_titles = []
             for title in Spider.outlink_graph[key]:
-                if title in crawled_titles and title != key:
+                if title in Spider.crawled_titles and title != key:
                     new_titles.append(title)
             Spider.outlink_graph[key] = new_titles
 

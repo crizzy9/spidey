@@ -3,6 +3,7 @@ import time
 from app.scheduler import Scheduler
 from app.page_rank import PageRank
 from app.spider import Spider
+from app.indexer import Indexer
 
 
 print("WEB CRAWLER STARTING...")
@@ -49,6 +50,15 @@ pageRank.calculate_page_rank()
 
 # pageRank = PageRank(Spider.dir_name, Spider.inlink_graph, Spider.outlink_graph)
 # pageRank.calculate_page_rank()
+
+# indexing stuff
+indexer = Indexer(Spider.crawled_titles)
+
+print("Creating index...")
+indexer.create_index()
+indexer.create_bi_gram_index()
+indexer.create_tri_gram_index()
+print("Index created in data/index_unigrams.txt data/index_bigrams.txt data/index_trigrams.txt")
 
 # execution complete
 print("*****************************\nExecution time:")

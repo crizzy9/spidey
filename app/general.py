@@ -61,13 +61,13 @@ def arr_to_file(links, file):
 
 def file_to_dict(file_name):
     if os.path.isfile(file_name):
-        print("Loading graph file:", file_name)
+        print("Loading file:", file_name)
         if os.path.getsize(file_name) > 0:
             with open(file_name, "rb") as handle:
                 dic = pickle.load(handle)
             return dic
     else:
-        print("Creating graph file:", file_name)
+        print("Creating file:", file_name)
         f = open(file_name, "wb+")
         f.close()
         return {}
@@ -80,6 +80,12 @@ def dict_to_file(graph, file_name):
         pickle.dump(graph, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+def index_to_str_file(dic, file_name):
+    with open(file_name, "w+") as file:
+        for key, value in dic.items():
+            file.write(key + ":" + str(value) + '\n')
+
+
 def dict_to_str_file(graph, file_name):
     with open(file_name, "w+") as file:
         for key in graph.keys():
@@ -87,6 +93,9 @@ def dict_to_str_file(graph, file_name):
             for elem in graph[key]:
                 line += elem + ' '
             file.write(line.strip() + '\n')
+
+# def str_file_to_dict(dic, file_name):
+#     with open(file_name, 'r') as file:
 
 
 def get_domain_name(url):
@@ -108,9 +117,12 @@ def get_titles_for_urls(urls):
     return titles
 
 
-def store_document(name, page_name, page_url, body_content):
-    path = os.path.join(DOCUMENTS_DIR, str(name))
-    new_content = "URL: " + page_url + "\n\n" + "Page Name: " + page_name + "\n\n" + str(body_content)
+def store_document(page_name, page_url, body_content):
+    path = os.path.join(DOCUMENTS_DIR, str(page_name))
+    if os.path.isfile(path):
+        print("FILE ALREADY EXISTS\nPATH:", path)
+    page_title = page_name.lower().translate(str.maketrans({'_': ' ', '(': '', ')': ''}))
+    new_content = page_title + "\n " + str(body_content)
     try:
         create_dir(DOCUMENTS_DIR)
         if not os.path.isfile(path):
