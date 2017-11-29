@@ -25,9 +25,9 @@ class PageRank:
         self.get_sinks()
 
     def calculate_page_rank(self):
-        print("GRAPHS:")
-        print(self.inlink_graph)
-        print(self.outlink_graph)
+        # print("GRAPHS:")
+        # print(self.inlink_graph)
+        # print(self.outlink_graph)
         if self.inlink_graph == {} or self.outlink_graph == {}:
             print("Graph is empty!!!")
             return

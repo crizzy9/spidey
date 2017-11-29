@@ -118,7 +118,7 @@ def get_titles_for_urls(urls):
 
 
 def store_document(page_name, page_url, body_content):
-    path = os.path.join(DOCUMENTS_DIR, str(page_name))
+    path = os.path.join(DOCUMENTS_DIR, str(page_name) + '.txt')
     if os.path.isfile(path):
         print("FILE ALREADY EXISTS\nPATH:", path)
     # page_title = page_name.lower().translate(str.maketrans({'_': ' ', '(': '', ')': ''}))

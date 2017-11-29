@@ -5,7 +5,8 @@ from operator import itemgetter
 
 class Indexer:
 
-    data_directory = 'data'
+    data_directory = '../data'
+    documents_directory = '../documents'
     index = {}
     index_file_name = 'index_unigram.txt'
     tf_unigram_file_name = 'unigram_tf_table.txt'
@@ -25,13 +26,13 @@ class Indexer:
 
     def create_index(self):
         for doc in self.crawled:
-            file_name = os.path.join('documents', doc)
+            file_name = os.path.join(self.documents_directory, doc + '.txt')
             with open(file_name, 'r') as f:
                 words = f.read().split(' ')
                 words = list(filter(None, words))
                 tokens = []
                 for unstriped_word in words:
-                    word = unstriped_word.strip()
+                    word = unstriped_word.strip().replace("\n", "")
                     if word not in tokens:
                         tokens.append(word)
                     if word not in self.index.keys():
@@ -47,7 +48,7 @@ class Indexer:
                             self.index[word].append([doc, 1])
                 self.token_freq[doc] = len(tokens)
 
-        with open('data/tokens.txt', 'w') as f:
+        with open(os.path.join(self.data_directory, 'tokens.txt'), 'w') as f:
             f.write("Doc\t\t\t\tNumber of tokens\n")
             for t in self.token_freq.keys():
                 f.write(str(t) + "\t\t" + str(self.token_freq[t]) + "\n")
@@ -59,7 +60,7 @@ class Indexer:
 
     def create_bi_gram_index(self):
         for doc in self.crawled:
-            file_name = os.path.join('documents', doc)
+            file_name = os.path.join(self.documents_directory, doc + '.txt')
             with open(file_name, 'r') as f:
                 words = f.read().split(' ')
                 words = list(filter(None, words))
@@ -88,7 +89,7 @@ class Indexer:
 
     def create_tri_gram_index(self):
         for doc in self.crawled:
-            file_name = os.path.join('documents', doc)
+            file_name = os.path.join(self.documents_directory, doc + '.txt')
             with open(file_name, 'r') as f:
                 words = f.read().split(' ')
                 words = list(filter(None, words))
@@ -131,7 +132,7 @@ class Indexer:
             for tup in index[term]:
                 count += tup[1]
             tf[term] = count
-        with open(os.path.join('data',file_name), 'w') as f:
+        with open(os.path.join(self.data_directory,file_name), 'w') as f:
             # [[t, tf[t]] for t in sorted(tf, key=tf.get, reverse=True)]
             f.write("Term\tFrequency\n")
             for t in sorted(tf, key=tf.get, reverse=True):
@@ -146,7 +147,7 @@ class Indexer:
                 ids.append(tup[0])
                 count += 1
             df.append([term, ids, count])
-        with open(os.path.join('data',file_name), 'w') as f:
+        with open(os.path.join(self.data_directory,file_name), 'w') as f:
             f.write("Term\t\t\t\tDocID\t\t\t\tDoc_Frequency\n")
             for t in sorted(df, key=itemgetter(0)):
                 f.write(str(t[0]) + "\t\t" + str(t[1]) + "\t\t\t" + str(t[2]) + "\n")

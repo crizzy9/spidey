@@ -18,7 +18,7 @@ class Parser:
 
     def parse_documents(self):
         for doc in self.crawled:
-            file_name = os.path.join('documents', doc)
+            file_name = os.path.join('documents', doc + '.txt')
             with open(file_name, 'r+') as f:
                 content = f.read()
                 body_content = soup(content, "html.parser")
