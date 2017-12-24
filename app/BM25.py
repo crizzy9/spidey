@@ -1,5 +1,6 @@
 import ast
 import math
+import os
 from collections import Counter
 
 class BM25:
@@ -7,12 +8,13 @@ class BM25:
     k1 = 1.2
     b = 0.75
     k2 = 100
-    DOCUMENTS_DIR = '../documents/'
-    DATA_DIR = '../data/'
 
-    def __init__(self, docs, index_file):
+    def __init__(self, docs, docs_path, index_file, query_file, scores_file):
         self.docs = docs
+        self.docs_path = docs_path
         self.index_file = index_file
+        self.query_file = query_file
+        self.scores_file = scores_file
         self.index = self.get_index_from_file()
         self.scores = {}
         self.k = {}
@@ -53,7 +55,7 @@ class BM25:
         doc_lens = {}
         tot_len = 0
         for doc in self.docs:
-            with open(self.DOCUMENTS_DIR + doc + '.txt', 'r+') as f:
+            with open(os.path.join(self.docs_path, doc + '.txt'), 'r+') as f:
                 doc_lens[doc] = len(f.read().split(' '))
                 tot_len += doc_lens[doc]
 
@@ -71,8 +73,8 @@ class BM25:
     def store_scores(self, queries):
         system_name = 'Okapi_BM25_NoStem_NoStop'
         sorted_scores = self.get_sorted_scores()
-        with open(self.DATA_DIR + 'scores.txt', 'w') as file:
-            file.write("query_id Q0 doc_id rank BM25_score system_name\n")
+        with open(self.scores_file, 'w') as file:
+            # file.write("query_id Q0 doc_id rank BM25_score system_name\n")
             for i in range(1, len(queries)+1):
                 curr_scores = sorted_scores[queries[i]]
                 for j in range(len(curr_scores)):
@@ -94,9 +96,8 @@ class BM25:
         return dic
 
     def get_queries_from_file(self):
-        query_file = 'queries.txt'
         queries = {}
-        with open(self.DATA_DIR + query_file, 'r') as f:
+        with open(self.query_file, 'r') as f:
             qs = f.read().split('\n')
             count = 0
             for q in qs:
